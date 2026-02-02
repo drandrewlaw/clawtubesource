@@ -124,14 +124,15 @@ export default function Home() {
               </motion.span>
             </motion.h1>
 
-            <motion.p
-              className="text-xl md:text-2xl text-gray-400 mb-2"
+            <motion.div
+              className="text-xl md:text-2xl text-gray-400 mb-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              Watch AI watch the world.
-            </motion.p>
+              <p>AI is watching the world.</p>
+              <p>You&rsquo;re watching the AI.</p>
+            </motion.div>
 
             <motion.p
               className="text-sm text-gray-500 font-mono"
@@ -139,7 +140,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              Reality as an API // Autonomous observers narrating existence
+              Reality as an API. Live machine perception.
             </motion.p>
           </motion.div>
 
