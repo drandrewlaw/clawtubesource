@@ -1,0 +1,161 @@
+{
+    "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/specification/main/schema/mcp.json",
+    "name": "eyecu",
+    "displayName": "eyecu.ai Vision",
+    "description": "Give your AI agent real-time vision of any video livestream",
+    "version": "1.0.0",
+    "vendor": "eyecu.ai",
+    "tools": [
+        {
+            "name": "eyecu_check_once",
+            "description": "Analyze a single frame from a YouTube livestream. Returns an AI interpretation of what's happening in the scene.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "youtube_url": {
+                        "type": "string",
+                        "description": "YouTube livestream URL (e.g., https://www.youtube.com/watch?v=...)"
+                    },
+                    "condition": {
+                        "type": "string",
+                        "description": "Question or condition to evaluate against the current frame (e.g., 'What activity is happening?')"
+                    },
+                    "model": {
+                        "type": "string",
+                        "enum": [
+                            "gemini-2.5-flash",
+                            "gpt-4o-mini",
+                            "claude-3-5-sonnet"
+                        ],
+                        "description": "AI model to use for analysis",
+                        "default": "gemini-2.5-flash"
+                    },
+                    "include_frame": {
+                        "type": "boolean",
+                        "description": "Include the captured frame as base64 in the response",
+                        "default": false
+                    }
+                },
+                "required": [
+                    "youtube_url",
+                    "condition"
+                ]
+            }
+        },
+        {
+            "name": "eyecu_start_monitor",
+            "description": "Start continuous monitoring of a livestream. Sends webhook notifications when the specified condition is detected.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "youtube_url": {
+                        "type": "string",
+                        "description": "YouTube livestream URL"
+                    },
+                    "condition": {
+                        "type": "string",
+                        "description": "Condition to watch for (e.g., 'Detect when crowd size exceeds 50 people')"
+                    },
+                    "webhook_url": {
+                        "type": "string",
+                        "description": "URL to POST when condition is triggered"
+                    },
+                    "interval_seconds": {
+                        "type": "number",
+                        "description": "Seconds between frame checks",
+                        "default": 10
+                    }
+                },
+                "required": [
+                    "youtube_url",
+                    "condition",
+                    "webhook_url"
+                ]
+            }
+        },
+        {
+            "name": "eyecu_get_digest",
+            "description": "Get a topic-focused summary of what's been happening on a stream over a time window.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "youtube_url": {
+                        "type": "string",
+                        "description": "YouTube livestream URL"
+                    },
+                    "topic": {
+                        "type": "string",
+                        "description": "Topic or theme to focus the summary on (e.g., 'crowd behavior', 'weather conditions')"
+                    },
+                    "window_minutes": {
+                        "type": "number",
+                        "description": "Time window for the digest in minutes",
+                        "default": 10
+                    }
+                },
+                "required": [
+                    "youtube_url",
+                    "topic"
+                ]
+            }
+        },
+        {
+            "name": "eyecu_list_jobs",
+            "description": "List all active and recent monitoring/digest jobs.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {}
+            }
+        },
+        {
+            "name": "eyecu_cancel_job",
+            "description": "Cancel a running monitoring or digest job.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "job_id": {
+                        "type": "string",
+                        "description": "ID of the job to cancel"
+                    }
+                },
+                "required": [
+                    "job_id"
+                ]
+            }
+        }
+    ],
+    "resources": [
+        {
+            "name": "live_streams",
+            "description": "List of curated live streams being watched by AI agents",
+            "uri": "eyecu://streams",
+            "mimeType": "application/json"
+        }
+    ],
+    "prompts": [
+        {
+            "name": "analyze_stream",
+            "description": "Generate an insightful analysis of a livestream",
+            "arguments": [
+                {
+                    "name": "youtube_url",
+                    "description": "YouTube livestream URL",
+                    "required": true
+                },
+                {
+                    "name": "personality",
+                    "description": "Agent personality: optimist, skeptic, poet, analyst, guardian",
+                    "required": false
+                }
+            ]
+        }
+    ],
+    "server": {
+        "command": "npx",
+        "args": [
+            "-y",
+            "eyecu-mcp-server"
+        ],
+        "env": {}
+    }
+}
