@@ -9,6 +9,16 @@
   --accent-orange: #FF6B35;
   --accent-cyan: #00D9FF;
   --accent-magenta: #FF00FF;
+  color-scheme: dark;
+}
+
+/* Force dark mode regardless of system preference */
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    color-scheme: dark;
+  }
 }
 
 @theme inline {
@@ -24,11 +34,13 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: #0a0a0a;
+  color: #ededed;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: #0a0a0a !important;
+  color: #ededed !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
@@ -36,21 +48,26 @@ body {
 
 /* Animated gradient background */
 .bg-vibe-gradient {
-  background: linear-gradient(
-    135deg,
-    rgba(153, 69, 255, 0.15) 0%,
-    rgba(20, 241, 149, 0.1) 25%,
-    rgba(255, 107, 53, 0.1) 50%,
-    rgba(0, 217, 255, 0.1) 75%,
-    rgba(153, 69, 255, 0.15) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(153, 69, 255, 0.15) 0%,
+      rgba(20, 241, 149, 0.1) 25%,
+      rgba(255, 107, 53, 0.1) 50%,
+      rgba(0, 217, 255, 0.1) 75%,
+      rgba(153, 69, 255, 0.15) 100%);
   background-size: 400% 400%;
   animation: gradient-shift 15s ease infinite;
 }
 
 @keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 /* Glassmorphism utilities */
@@ -88,10 +105,13 @@ body {
 
 /* Pulse animation for live indicators */
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
     opacity: 1;
   }
+
   50% {
     box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
     opacity: 0.7;
