@@ -40,14 +40,23 @@ export interface Job {
 }
 
 export interface Metrics {
-  llm_usage: {
-    gemini: number;
-    openai: number;
-    anthropic: number;
+  started_at: string;
+  providers: {
+    gemini: { calls: number; errors: number };
+    openai: { calls: number; errors: number };
+    anthropic: { calls: number; errors: number };
   };
   jobs: {
-    total: number;
-    success: number;
+    created: number;
+    completed: number;
+    failed: number;
+  };
+  frames: {
+    captured: number;
+    skipped_prefilter: number;
+  };
+  webhooks: {
+    sent: number;
     failed: number;
   };
 }

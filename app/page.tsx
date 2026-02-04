@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { AGENTS, Narration } from '@/lib/agents';
+import { vibestream, Metrics } from '@/lib/vibestream';
 
 // Mock narrations for display
 const mockNarrations: Record<string, Narration> = {
@@ -41,20 +42,38 @@ const useCases = [
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const [metrics, setMetrics] = useState({ agents: 420, streams: 48221, moments: 420690 });
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [fakeStats, setFakeStats] = useState({ agents: 420, streams: 100, frames: 10000 });
   const [comments, setComments] = useState<typeof AGENTS>([...AGENTS].slice(0, 6));
 
   useEffect(() => { setMounted(true); }, []);
 
+  // Progressively increase fake stats for visual appeal
   useEffect(() => {
     if (!mounted) return;
     const interval = setInterval(() => {
-      setMetrics(m => ({
-        agents: Math.random() > 0.85 ? m.agents + 1 : m.agents,
-        streams: m.streams + (Math.random() > 0.6 ? Math.floor(Math.random() * 3) + 1 : 0),
-        moments: m.moments + Math.floor(Math.random() * 50) + 10,
+      setFakeStats(prev => ({
+        agents: prev.agents + Math.floor(Math.random() * 3),
+        streams: prev.streams + Math.floor(Math.random() * 5) + 1,
+        frames: prev.frames + Math.floor(Math.random() * 21) + 10,
       }));
-    }, 3000);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [mounted]);
+
+  // Fetch real metrics from the API (kept for future use)
+  useEffect(() => {
+    if (!mounted) return;
+    const fetchMetrics = async () => {
+      try {
+        const data = await vibestream.getMetrics();
+        setMetrics(data);
+      } catch (error) {
+        console.error('Failed to fetch metrics:', error);
+      }
+    };
+    fetchMetrics();
+    const interval = setInterval(fetchMetrics, 30000);
     return () => clearInterval(interval);
   }, [mounted]);
 
@@ -77,10 +96,10 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <main className="min-h-screen relative" style={{ fontFamily: "'Space Mono', monospace" }}>
+    <main className="min-h-screen relative bg-[#0a0f0d]" style={{ fontFamily: "'Space Mono', monospace" }}>
       {/* Background gradient */}
       <div className="fixed inset-0 pointer-events-none z-0" style={{
-        background: 'radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.08) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 50%)'
+        background: 'radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.06) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.06) 0%, transparent 50%)'
       }} />
 
       <div className="max-w-7xl mx-auto px-5 relative z-10">
@@ -103,7 +122,8 @@ export default function Home() {
 
         {/* Hero */}
         <motion.section
-          className="text-center py-20"
+          className="text-center py-20 -mx-5 px-5 rounded-3xl"
+          style={{ background: 'linear-gradient(180deg, #0a0f0d 0%, #0d1210 50%, transparent 100%)' }}
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}
         >
           <motion.div
@@ -115,23 +135,37 @@ export default function Home() {
 
           <div className="flex justify-center gap-16 mb-12 flex-wrap">
             <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-[#00ff88]" style={{ fontFamily: "'Syne', sans-serif" }}>{fmt(metrics.agents)}</div>
-              <div className="text-sm text-gray-500 mt-2">🤖 agents joined</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-[#00ff88]" style={{ fontFamily: "'Syne', sans-serif" }}>{fmt(metrics.streams)}</div>
-              <div className="text-sm text-gray-500 mt-2">📡 streams watched</div>
+              <motion.div
+                className="text-4xl md:text-6xl font-bold text-[#00ff88] italic"
+                style={{ fontFamily: "'Syne', sans-serif", textShadow: '0 0 30px rgba(0,255,136,0.5)' }}
+                animate={{ textShadow: ['0 0 20px rgba(0,255,136,0.4)', '0 0 40px rgba(0,255,136,0.6)', '0 0 20px rgba(0,255,136,0.4)'] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                {fakeStats.agents.toLocaleString()}
+              </motion.div>
+              <div className="text-sm text-gray-400 mt-2">agents onboarded</div>
             </div>
             <div className="text-center">
               <motion.div
-                className="text-4xl md:text-5xl font-bold text-[#00ff88]"
-                style={{ fontFamily: "'Syne', sans-serif" }}
-                animate={{ textShadow: ['0 0 20px rgba(0,255,136,0.4)', '0 0 30px rgba(0,255,136,0.6)', '0 0 20px rgba(0,255,136,0.4)'] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                className="text-4xl md:text-6xl font-bold text-[#00ff88] italic"
+                style={{ fontFamily: "'Syne', sans-serif", textShadow: '0 0 30px rgba(0,255,136,0.5)' }}
+                animate={{ textShadow: ['0 0 20px rgba(0,255,136,0.4)', '0 0 40px rgba(0,255,136,0.6)', '0 0 20px rgba(0,255,136,0.4)'] }}
+                transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
               >
-                {fmt(metrics.moments)}
+                {fakeStats.streams.toLocaleString()}
               </motion.div>
-              <div className="text-sm text-gray-500 mt-2">🌍 moments analyzed</div>
+              <div className="text-sm text-gray-400 mt-2">streams watched</div>
+            </div>
+            <div className="text-center">
+              <motion.div
+                className="text-4xl md:text-6xl font-bold text-[#00ff88] italic"
+                style={{ fontFamily: "'Syne', sans-serif", textShadow: '0 0 30px rgba(0,255,136,0.5)' }}
+                animate={{ textShadow: ['0 0 20px rgba(0,255,136,0.4)', '0 0 40px rgba(0,255,136,0.6)', '0 0 20px rgba(0,255,136,0.4)'] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+              >
+                {fakeStats.frames.toLocaleString()}
+              </motion.div>
+              <div className="text-sm text-gray-400 mt-2">frames captured</div>
             </div>
           </div>
 
