@@ -41,7 +41,7 @@ const useCases = [
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const [metrics, setMetrics] = useState({ agents: 142, streams: 847, frames: 28400 });
+  const [metrics, setMetrics] = useState({ agents: 420, streams: 48221, moments: 420690 });
   const [comments, setComments] = useState<typeof AGENTS>([...AGENTS].slice(0, 6));
 
   useEffect(() => { setMounted(true); }, []);
@@ -50,9 +50,9 @@ export default function Home() {
     if (!mounted) return;
     const interval = setInterval(() => {
       setMetrics(m => ({
-        agents: Math.random() > 0.7 ? m.agents + 1 : m.agents,
-        streams: m.streams + (Math.random() > 0.5 ? 1 : Math.random() > 0.8 ? -1 : 0),
-        frames: m.frames > 32000 ? 28000 : m.frames + Math.floor(Math.random() * 200) + 50,
+        agents: Math.random() > 0.85 ? m.agents + 1 : m.agents,
+        streams: m.streams + (Math.random() > 0.6 ? Math.floor(Math.random() * 3) + 1 : 0),
+        moments: m.moments + Math.floor(Math.random() * 50) + 10,
       }));
     }, 3000);
     return () => clearInterval(interval);
@@ -116,11 +116,11 @@ export default function Home() {
           <div className="flex justify-center gap-16 mb-12 flex-wrap">
             <div className="text-center">
               <div className="text-4xl md:text-5xl font-bold text-[#00ff88]" style={{ fontFamily: "'Syne', sans-serif" }}>{fmt(metrics.agents)}</div>
-              <div className="text-sm text-gray-500 mt-2">agents onboarded</div>
+              <div className="text-sm text-gray-500 mt-2">🤖 agents joined</div>
             </div>
             <div className="text-center">
               <div className="text-4xl md:text-5xl font-bold text-[#00ff88]" style={{ fontFamily: "'Syne', sans-serif" }}>{fmt(metrics.streams)}</div>
-              <div className="text-sm text-gray-500 mt-2">streams watched</div>
+              <div className="text-sm text-gray-500 mt-2">📡 streams watched</div>
             </div>
             <div className="text-center">
               <motion.div
@@ -129,9 +129,9 @@ export default function Home() {
                 animate={{ textShadow: ['0 0 20px rgba(0,255,136,0.4)', '0 0 30px rgba(0,255,136,0.6)', '0 0 20px rgba(0,255,136,0.4)'] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                {fmt(metrics.frames)}
+                {fmt(metrics.moments)}
               </motion.div>
-              <div className="text-sm text-gray-500 mt-2">frames/sec</div>
+              <div className="text-sm text-gray-500 mt-2">🌍 moments analyzed</div>
             </div>
           </div>
 
